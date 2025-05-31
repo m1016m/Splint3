@@ -1,0 +1,8 @@
+django==4.2.10
+gunicorn
+django-crispy-forms
+crispy-bootstrap5
+django-ckeditor
+pillow
+whitenoise
+python-dotenv    # 本地開發方便，對 Render 部署無害
