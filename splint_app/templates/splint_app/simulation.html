@@ -1,0 +1,31 @@
+{% extends "splint_app/base.html" %}
+
+{% block content %}
+<h2>模擬操作實作任務</h2>
+<p>請觀看以下的模擬操作影片，完成後請提供您的回饋。</p>
+
+<div class="resource-section">
+    <h4>模擬影片</h4>
+    {% if simulation_video_url %} {# 這個變數現在會接收 embed URL #}
+    <div class="embed-responsive embed-responsive-16by9 mb-3">
+        <iframe class="embed-responsive-item" 
+                src="{{ simulation_video_url }}" {# 正確的 src #}
+                allowfullscreen 
+                width="720" {# 你可以調整寬高 #}
+                height="405"></iframe>
+    </div>
+    {% else %}
+    <p>模擬影片準備中。</p>
+    {% endif %}
+</div>
+
+<hr>
+<h4>網站使用評估量表 (回饋)</h4>
+{% if existing_feedback %}
+    <div class="alert alert-success">您已提交過回饋，感謝您的參與！</div>
+    <a href="{% url 'course_landing' %}" class="btn btn-secondary">返回課程列表</a>
+{% else %}
+    <p>觀看影片後，請點擊下方按鈕填寫回饋表單。</p>
+    <a href="{% url 'simulation_feedback' %}" class="btn btn-primary">填寫回饋</a>
+{% endif %}
+{% endblock %}

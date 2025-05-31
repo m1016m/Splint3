@@ -1,0 +1,36 @@
+{% extends "splint_app/base.html" %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">歡迎來到副木教學平台</h1>
+        <p class="col-md-8 fs-4">
+            本平台提供副木製作的基礎知識與實作指導。
+            {% if not user.is_authenticated %}
+            請 <a href="{% url 'login' %}">登入</a> 或 <a href="{% url 'signup' %}">建立帳號</a> 以開始學習。
+            {% else %}
+            您已登入，點擊上方「課程內容」開始學習。
+            {% endif %}
+        </p>
+        {% if not user.is_authenticated %}
+        <a href="{% url 'signup' %}" class="btn btn-primary btn-lg" type="button">立即註冊</a>
+        <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg ms-2" type="button">登入平台</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row align-items-md-stretch">
+    <div class="col-md-6">
+        <div class="h-100 p-5 text-white bg-dark rounded-3">
+            <h2>關於副木</h2>
+            <p>了解副木的基本原理、應用範圍及其在臨床治療中的重要性。</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="h-100 p-5 bg-light border rounded-3">
+            <h2>平台特色</h2>
+            <p>系統化的課程模組、多媒體教學資源、模擬操作與即時回饋，助您掌握副木製作技巧。</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

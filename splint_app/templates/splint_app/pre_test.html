@@ -1,0 +1,410 @@
+{% extends "splint_app/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* ... (你的 CSS 樣式，保持不變) ... */
+    body {
+        font-family: 'Microsoft JhengHei', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+    }
+    .pre-test-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+        border-radius: 10px;
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+        background-color: #4682B4;
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .instructions {
+        background-color: #e9f7fe;
+        padding: 15px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+        border-left: 4px solid #4682B4;
+    }
+    .question {
+        background-color: white;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .question-text {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .options {
+        display: flex;
+        gap: 40px;
+        margin-left: 20px;
+    }
+    .option {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    input[type="radio"] {
+        margin-right: 8px;
+        cursor: pointer;
+    }
+    .submit-section {
+        text-align: center;
+        margin-top: 40px;
+    }
+    button.pre-test-btn, input[type="submit"].pre-test-btn {
+        background-color: #4682B4;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    button.pre-test-btn:hover, input[type="submit"].pre-test-btn:hover {
+        background-color: #3a6d99;
+    }
+    #results {
+        display: none;
+        margin-top: 30px;
+        background-color: #e9f7fe;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .correct { color: green; font-weight: bold; }
+    .incorrect { color: red; font-weight: bold; }
+    .progress-container { background-color: #ddd; border-radius: 20px; margin-bottom: 20px; height: 12px; }
+    .progress-bar { height: 12px; background-color: #4682B4; border-radius: 20px; width: 0%; transition: width 0.5s; }
+    .counter { text-align: right; margin-bottom: 5px; font-size: 14px; color: #666; }
+</style>
+
+<div class="pre-test-container">
+    <div class="header">
+        <h1>副木製作基礎前測</h1>
+        <p>評估您對副木製作的基礎理解</p>
+    </div>
+
+    <div class="instructions">
+        <h2>評測說明：</h2>
+        <p>本測驗目的是評估您在開始正式課程前對副木製作的理解程度。測驗包含20道判斷題，請根據您的知識判斷每個陳述是「正確」還是「錯誤」。</p>
+        <p>完成測驗後，系統將提供您的得分與反饋，幫助您了解自己的知識強弱項，以便更有針對性地學習。</p>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="counter">題目：<span id="currentQuestion">1</span>/20</div>
+    </div>
+
+    <form id="quizForm">
+        <!-- 副木基本概念 -->
+        <div class="question" id="q1">
+            <div class="question-text">1. 副木的主要目的是限制關節活動以促進恢復和保護受傷部位。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q1" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q1" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q2"> {# <--- 移除 style="display:none;" #}
+            <div class="question-text">2. 休息型副木(Resting splint)和功能型副木(Functional splint)具有完全相同的設計目的。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q2" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q2" value="false"> 錯誤</label>
+            </div>
+        </div>
+        {# ... 對 q3 到 q20 都移除 style="display:none;" ... #}
+        <div class="question" id="q3">
+            <div class="question-text">3. 副木製作前不需要考慮患者的病史和相關診斷。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q3" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q3" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q4">
+            <div class="question-text">4. 石膏副木和熱塑性副木都是常見的副木類型，但其製作方式和材料特性完全不同。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q4" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q4" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q5">
+            <div class="question-text">5. 熱塑性材料在加熱後變軟可塑，冷卻後會保持形狀。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q5" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q5" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q6">
+            <div class="question-text">6. 所有類型的熱塑性材料都具有相同的加熱溫度和硬度。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q6" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q6" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q7">
+            <div class="question-text">7. 製作副木時使用熱水浴加熱熱塑性材料是常見的方法之一。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q7" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q7" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q8">
+            <div class="question-text">8. 副木邊緣處理不是一個重要步驟，可以忽略。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q8" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q8" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q9">
+            <div class="question-text">9. 製作副木時不需要考慮骨骼標誌點和關節活動度。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q9" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q9" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q10">
+            <div class="question-text">10. 手腕副木設計時應注意避免壓迫正中神經。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q10" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q10" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q11">
+            <div class="question-text">11. 製作拇指副木時，拇指的解剖學位置(功能位置)是完全伸直的姿勢。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q11" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q11" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q12">
+            <div class="question-text">12. 副木製作過程中，患者手部應保持在非功能位置(Non-functional position)。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q12" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q12" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q13">
+            <div class="question-text">13. 製作副木前應先測量患者的相關部位以確定副木大小。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q13" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q13" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q14">
+            <div class="question-text">14. 副木綁帶的位置和鬆緊度對副木功效沒有影響。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q14" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q14" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q15">
+            <div class="question-text">15. 患者穿戴副木時的舒適度不是重要的考量因素。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q15" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q15" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q16">
+            <div class="question-text">16. 在熱塑性材料冷卻前可進行多次調整以確保貼合。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q16" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q16" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q17">
+            <div class="question-text">17. 副木使用後應立即檢查是否造成皮膚紅腫或壓迫。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q17" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q17" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q18">
+            <div class="question-text">18. 一旦製作完成，副木就不需要進行任何後續調整。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q18" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q18" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q19">
+            <div class="question-text">19. 患者應被告知副木的清潔和維護方法。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q19" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q19" value="false"> 錯誤</label>
+            </div>
+        </div>
+        <div class="question" id="q20">
+            <div class="question-text">20. 評估副木效果時，只需考慮症狀改善情況，不需考慮患者依從性。</div>
+            <div class="options">
+                <label class="option"><input type="radio" name="q20" value="true"> 正確</label>
+                <label class="option"><input type="radio" name="q20" value="false"> 錯誤</label>
+            </div>
+        </div>
+
+        <div class="submit-section">
+            <button type="button" id="submitBtn" class="pre-test-btn">提交測驗</button>
+        </div>
+    </form>
+
+    <div id="results">
+        <h2>測驗結果</h2>
+        <p>您的得分：<span id="score">0</span>/20</p>
+        <div id="feedback"></div>
+        <p id="strengthWeakness"></p>
+        <form method="post" action="{% url 'pre_test' %}" id="djangoPreTestForm" style="display: none;">
+            {% csrf_token %}
+            <input type="hidden" name="pre_test_score" id="id_pre_test_score" value="0">
+            <input type="hidden" name="confirmation" value="true">
+        </form>
+        <button type="button" id="startCourseBtn" class="pre-test-btn">開始正式課程</button>
+    </div>
+</div>
+
+<script>
+    // 正確答案
+    const correctAnswers = {
+        q1: "true",  q2: "false", q3: "false", q4: "true",  q5: "true",
+        q6: "false", q7: "true",  q8: "false", q9: "false", q10: "true",
+        q11: "false",q12: "false",q13: "true", q14: "false", q15: "false",
+        q16: "true", q17: "true", q18: "false",q19: "true",  q20: "false"
+    };
+
+    // 題目類別
+    const categories = {
+        q1: "基本概念", q2: "基本概念", q3: "基本概念", q4: "基本概念",
+        q5: "材料與工具", q6: "材料與工具", q7: "材料與工具", q8: "材料與工具",
+        q9: "解剖與生物力學", q10: "解剖與生物力學", q11: "解剖與生物力學", q12: "解剖與生物力學",
+        q13: "副木製作技術", q14: "副木製作技術", q15: "副木製作技術", q16: "副木製作技術",
+        q17: "副木照護與評估", q18: "副木照護與評估", q19: "副木照護與評估", q20: "副木照護與評估"
+    };
+
+    let finalScore = 0;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // 初始隱藏 q2 到 q20
+        for(let i = 2; i <= 20; i++) {
+            const questionElement = document.getElementById("q" + i);
+            if (questionElement) {
+                questionElement.style.display = "none";
+            }
+        }
+        updateProgress(1);
+
+        // 為每個問題添加事件監聽器 (q1 到 q19)
+        for(let i = 1; i <= 19; i++) {
+            const questionInputs = document.querySelectorAll(`input[name="q${i}"]`);
+            questionInputs.forEach(input => {
+                input.addEventListener("change", function() {
+                    setTimeout(() => {
+                        const currentQ = document.getElementById("q" + i);
+                        const nextQ = document.getElementById("q" + (i + 1));
+                        if (currentQ) currentQ.style.display = "none";
+                        if (nextQ) nextQ.style.display = "block";
+                        updateProgress(i + 1);
+                    }, 300); // 延遲 300ms
+                });
+            });
+        }
+
+        // 特殊處理 q20 的 change 事件，因為它之後沒有下一題，而是準備提交
+        const q20Inputs = document.querySelectorAll(`input[name="q20"]`);
+        q20Inputs.forEach(input => {
+            input.addEventListener("change", function() {
+                // 可以選擇在選完最後一題後自動跳到提交按鈕，或者只是更新進度條
+                updateProgress(20); // 更新進度到 20/20
+                // 也可以考慮將焦點移到 "提交測驗" 按鈕
+                // document.getElementById("submitBtn").focus();
+            });
+        });
+    });
+
+    function updateProgress(questionNumber) {
+        const currentQElement = document.getElementById("currentQuestion");
+        const progressBarElement = document.getElementById("progressBar");
+        if (currentQElement) currentQElement.textContent = questionNumber;
+        if (progressBarElement) progressBarElement.style.width = (questionNumber / 20 * 100) + "%"; // 改為 questionNumber / 20
+        // 如果是最後一題，可以讓進度條滿
+        if (questionNumber === 20 && document.querySelector(`input[name="q20"]:checked`)) {
+             if (progressBarElement) progressBarElement.style.width = "100%";
+        } else if (questionNumber <= 20) {
+             if (progressBarElement) progressBarElement.style.width = ((questionNumber -1) / 20 * 100) + "%";
+        }
+    }
+
+
+    document.getElementById("submitBtn").addEventListener("click", function() {
+        let score = 0;
+        let totalAnswered = 0;
+        let categoryScores = {
+            "基本概念": { correct: 0, total: 4 }, "材料與工具": { correct: 0, total: 4 },
+            "解剖與生物力學": { correct: 0, total: 4 }, "副木製作技術": { correct: 0, total: 4 },
+            "副木照護與評估": { correct: 0, total: 4 }
+        };
+
+        for(let i = 1; i <= 20; i++) {
+            const questionName = "q" + i;
+            const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+            if (selectedOption) {
+                totalAnswered++;
+                if (correctAnswers[questionName] && selectedOption.value === correctAnswers[questionName]) {
+                    score++;
+                    if (categories[questionName] && categoryScores[categories[questionName]]) {
+                         categoryScores[categories[questionName]].correct++;
+                    }
+                }
+            }
+        }
+
+        if (totalAnswered < 20) {
+            alert(`您還有 ${20 - totalAnswered} 題未作答，請完成所有題目後再提交。`);
+            return;
+        }
+
+        finalScore = score;
+        document.getElementById("score").textContent = score;
+        
+        let feedbackHTML = "<h3>各領域得分：</h3><ul>";
+        let strengths = []; let weaknesses = [];
+        for (let category in categoryScores) {
+            const catData = categoryScores[category];
+            const percent = (catData.correct / catData.total) * 100;
+            feedbackHTML += `<li>${category}: <span class="${percent >= 75 ? 'correct' : 'incorrect'}">${catData.correct}/${catData.total} (${percent.toFixed(0)}%)</span></li>`;
+            if (percent >= 75) strengths.push(category); else weaknesses.push(category);
+        }
+        feedbackHTML += "</ul>";
+        
+        let swText = "";
+        if (strengths.length > 0) swText += `<strong>您的強項：</strong> ${strengths.join("、")}。<br>`;
+        if (weaknesses.length > 0) swText += `<strong>需要加強的領域：</strong> ${weaknesses.join("、")}。`;
+        
+        const feedbackEl = document.getElementById("feedback");
+        const swEl = document.getElementById("strengthWeakness");
+        const quizFormEl = document.getElementById("quizForm");
+        const resultsEl = document.getElementById("results");
+
+        if(feedbackEl) feedbackEl.innerHTML = feedbackHTML;
+        if(swEl) swEl.innerHTML = swText;
+        if(quizFormEl) quizFormEl.style.display = "none";
+        if(resultsEl) resultsEl.style.display = "block";
+    });
+
+    document.getElementById("startCourseBtn").addEventListener("click", function() {
+        const scoreInput = document.getElementById("id_pre_test_score");
+        if (scoreInput) scoreInput.value = finalScore;
+        const djangoForm = document.getElementById("djangoPreTestForm");
+        if (djangoForm) {
+            djangoForm.submit();
+        } else {
+            alert("錯誤：無法提交測驗結果。將直接導向課程頁面。");
+            window.location.href = "{% url 'course_landing' %}";
+        }
+    });
+</script>
+{% endblock %}

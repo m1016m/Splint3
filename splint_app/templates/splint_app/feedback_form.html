@@ -1,0 +1,526 @@
+{% extends "splint_app/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    body { /* 注意：base.html 可能已經有 body 樣式，你可能需要調整或移除这里的 body 樣式 */
+        font-family: 'Microsoft JhengHei', Arial, sans-serif;
+        line-height: 1.6;
+        /* max-width: 900px; /* base.html 的 .container 可能會處理 */
+        /* margin: 0 auto; */
+        /* padding: 20px; */
+        /* background-color: #f5f5f5; /* base.html 的 body 背景色可能不同 */
+        color: #333;
+    }
+    .feedback-container { /* 給整個評估表一個容器 */
+        max-width: 900px;
+        margin: 20px auto; /* 調整與 navbar 的間距，並置中 */
+        background-color: #f5f5f5; /* 恢復你範例中的背景色 */
+        padding: 20px; /* 恢復你範例中的 padding */
+        border-radius: 10px; /* 可選，如果想讓容器本身有圓角 */
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+        background-color: #5b9bd5;
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .instructions {
+        background-color: #e9f7fe;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+        border-left: 4px solid #5b9bd5;
+    }
+    .form-container { /* 這是你範例中包裹評估表單的容器 */
+        background-color: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+    }
+    th, td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    tr:hover {
+        background-color: #f9f9f9;
+    }
+    .criteria {
+        font-weight: bold;
+    }
+    .criteria-description {
+        color: #666;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+    .radio-group {
+        display: flex;
+        justify-content: space-around;
+    }
+    .radio-option {
+        display: flex;
+        align-items: center;
+        margin: 0 5px;
+    }
+    input[type="radio"] {
+        margin-right: 5px;
+    }
+    .rating-header {
+        text-align: center;
+        font-weight: bold;
+        width: 18%;
+    }
+    .criteria-header {
+        width: 28%;
+    }
+    .submit-section {
+        text-align: center;
+        margin-top: 30px;
+    }
+    button.feedback-btn { /* 給所有按鈕一個統一的 class，方便修改 */
+        background-color: #5b9bd5;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    button.feedback-btn:hover {
+        background-color: #4a89c0;
+    }
+    .notes-section {
+        margin-top: 20px;
+    }
+    textarea#reflection { /* 確保選擇器正確 */
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        resize: vertical;
+        min-height: 100px;
+        font-family: 'Microsoft JhengHei', Arial, sans-serif;
+    }
+    .results { /* 這是你範例中包裹結果的容器 */
+        display: none; /* 初始隱藏 */
+        margin-top: 30px;
+        background-color: #e9f7fe;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    .chart-container {
+        width: 100%;
+        height: 300px; /* 或根據需要調整 */
+        margin-top: 20px;
+    }
+    .strength-weakness {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 6px;
+    }
+    .strength {
+        color: #28a745;
+        font-weight: bold;
+    }
+    .weakness {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    .reflection { /* 結果區的反思筆記 */
+        margin-top: 20px;
+    }
+    .video-reference {
+        margin-top: 30px;
+        padding: 15px;
+        background-color: #f2f2f2;
+        border-radius: 6px;
+        border-left: 4px solid #5b9bd5;
+    }
+</style>
+
+<div class="feedback-container"> {# 新增一個最外層的容器 #}
+    <div class="header">
+        <h1>副木製作自我評估表</h1>
+        <p>觀看模擬影片後的實作能力評估</p>
+    </div>
+
+    <div class="instructions">
+        <h2>評估說明：</h2>
+        <p>在觀看完副木製作模擬影片後，請根據您對製作流程的理解，評估您在各項關鍵技能上的掌握程度。</p>
+        <p>請根據您目前的能力水平誠實評分，這將幫助您識別需要加強的領域，並為後續的實作練習做好準備。</p>
+        <p><strong>評分標準：</strong></p>
+        <ul>
+            <li><strong>1分</strong> - 不理解/無法執行</li>
+            <li><strong>2分</strong> - 基礎理解但無法獨立執行</li>
+            <li><strong>3分</strong> - 可以在指導下執行</li>
+            <li><strong>4分</strong> - 可以獨立執行但不夠流暢</li>
+            <li><strong>5分</strong> - 熟練掌握並能獨立執行</li>
+        </ul>
+    </div>
+
+    {# 前端控制的表單 - ID 設為 frontendAssessmentForm 以示區別 #}
+    <div class="form-container" id="frontendAssessmentFormContainer">
+        <form id="assessmentForm">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="criteria-header">評估項目</th>
+                        <th class="rating-header">1分</th>
+                        <th class="rating-header">2分</th>
+                        <th class="rating-header">3分</th>
+                        <th class="rating-header">4分</th>
+                        <th class="rating-header">5分</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 項目1：評估與測量 -->
+                    <tr>
+                        <td>
+                            <div class="criteria">1. 評估與測量技能</div>
+                            <div class="criteria-description">包括正確評估患者需求、測量相關部位尺寸、確定副木類型與尺寸等</div>
+                        </td>
+                        <td colspan="5">
+                            <div class="radio-group">
+                                <label class="radio-option"><input type="radio" name="assessment" value="1"> 1</label>
+                                <label class="radio-option"><input type="radio" name="assessment" value="2"> 2</label>
+                                <label class="radio-option"><input type="radio" name="assessment" value="3"> 3</label>
+                                <label class="radio-option"><input type="radio" name="assessment" value="4"> 4</label>
+                                <label class="radio-option"><input type="radio" name="assessment" value="5"> 5</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- 項目2：材料準備與處理 -->
+                    <tr>
+                        <td>
+                            <div class="criteria">2. 材料準備與處理</div>
+                            <div class="criteria-description">選擇適當的熱塑性材料、正確加熱至適當溫度、把握加工時間窗等</div>
+                        </td>
+                        <td colspan="5">
+                            <div class="radio-group">
+                                <label class="radio-option"><input type="radio" name="material" value="1"> 1</label>
+                                <label class="radio-option"><input type="radio" name="material" value="2"> 2</label>
+                                <label class="radio-option"><input type="radio" name="material" value="3"> 3</label>
+                                <label class="radio-option"><input type="radio" name="material" value="4"> 4</label>
+                                <label class="radio-option"><input type="radio" name="material" value="5"> 5</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- 項目3：塑形與成型技巧 -->
+                    <tr>
+                        <td>
+                            <div class="criteria">3. 塑形與成型技巧</div>
+                            <div class="criteria-description">將材料精確塑形至需要的形狀、配合解剖結構正確成型、避免氣泡或皺摺等</div>
+                        </td>
+                        <td colspan="5">
+                            <div class="radio-group">
+                                <label class="radio-option"><input type="radio" name="molding" value="1"> 1</label>
+                                <label class="radio-option"><input type="radio" name="molding" value="2"> 2</label>
+                                <label class="radio-option"><input type="radio" name="molding" value="3"> 3</label>
+                                <label class="radio-option"><input type="radio" name="molding" value="4"> 4</label>
+                                <label class="radio-option"><input type="radio" name="molding" value="5"> 5</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- 項目4：關節位置擺位 -->
+                    <tr>
+                        <td>
+                            <div class="criteria">4. 關節位置擺位</div>
+                            <div class="criteria-description">將患者關節擺放在適當的功能位置或治療位置、維持正確位置直到材料冷卻固定等</div>
+                        </td>
+                        <td colspan="5">
+                            <div class="radio-group">
+                                <label class="radio-option"><input type="radio" name="positioning" value="1"> 1</label>
+                                <label class="radio-option"><input type="radio" name="positioning" value="2"> 2</label>
+                                <label class="radio-option"><input type="radio" name="positioning" value="3"> 3</label>
+                                <label class="radio-option"><input type="radio" name="positioning" value="4"> 4</label>
+                                <label class="radio-option"><input type="radio" name="positioning" value="5"> 5</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- 項目5：修剪與邊緣處理 -->
+                    <tr>
+                        <td>
+                            <div class="criteria">5. 修剪與邊緣處理</div>
+                            <div class="criteria-description">準確修剪多餘材料、邊緣處理圓滑無銳利處、確保舒適性與安全性等</div>
+                        </td>
+                        <td colspan="5">
+                            <div class="radio-group">
+                                <label class="radio-option"><input type="radio" name="trimming" value="1"> 1</label>
+                                <label class="radio-option"><input type="radio" name="trimming" value="2"> 2</label>
+                                <label class="radio-option"><input type="radio" name="trimming" value="3"> 3</label>
+                                <label class="radio-option"><input type="radio" name="trimming" value="4"> 4</label>
+                                <label class="radio-option"><input type="radio" name="trimming" value="5"> 5</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- 項目6：固定與調整 -->
+                    <tr>
+                        <td>
+                            <div class="criteria">6. 固定與調整</div>
+                            <div class="criteria-description">正確選擇並安裝固定帶、調整固定帶鬆緊度、檢查穿戴後的貼合度與功能等</div>
+                        </td>
+                        <td colspan="5">
+                            <div class="radio-group">
+                                <label class="radio-option"><input type="radio" name="securing" value="1"> 1</label>
+                                <label class="radio-option"><input type="radio" name="securing" value="2"> 2</label>
+                                <label class="radio-option"><input type="radio" name="securing" value="3"> 3</label>
+                                <label class="radio-option"><input type="radio" name="securing" value="4"> 4</label>
+                                <label class="radio-option"><input type="radio" name="securing" value="5"> 5</label>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="notes-section">
+                <h3>反思與改進筆記：</h3>
+                <textarea id="reflection" placeholder="請記錄您在觀看影片後的思考、發現的優缺點、以及需要改進的地方..."></textarea>
+            </div>
+            
+            <div class="submit-section">
+                <button type="button" id="showResultsBtn" class="feedback-btn">提交評估並查看結果</button> {# 改名 #}
+            </div>
+        </form>
+    </div>
+
+    {# Django 表單，用於提交數據到後端 - 保持隱藏 #}
+    <form method="post" action="{% url 'simulation_feedback' %}" id="djangoBackendForm" style="display: none;">
+        {% csrf_token %}
+        {# 這些 input 的 name 必須與 FeedbackForm 中的字段名完全一致 #}
+        <input type="hidden" name="assessment" id="django_assessment_input">
+        <input type="hidden" name="material" id="django_material_input">
+        <input type="hidden" name="molding" id="django_molding_input">
+        <input type="hidden" name="positioning" id="django_positioning_input">
+        <input type="hidden" name="trimming" id="django_trimming_input">
+        <input type="hidden" name="securing" id="django_securing_input">
+        <textarea name="reflection_notes" id="django_reflection_notes_input" style="display:none;"></textarea>
+    </form>
+
+    {# 結果顯示區塊 #}
+    <div class="results" id="resultsDisplaySection">
+        <h2>評估結果</h2>
+        <div class="chart-container">
+            <canvas id="radarChart"></canvas>
+        </div>
+        <div class="strength-weakness" id="strengthWeaknessDisplay">
+            <h3>強項與弱項分析</h3>
+            <div id="strengthContentDisplay"></div>
+            <div id="weaknessContentDisplay"></div>
+        </div>
+        <div class="reflection">
+            <h3>您的反思筆記：</h3>
+            <p id="reflectionContentDisplay"></p>
+        </div>
+        <div class="video-reference">
+            <h3>建議複習資源：</h3>
+            <p>根據您的評估結果，建議您複習以下影片段落：</p>
+            <ul id="videoRecommendationsDisplay"></ul>
+        </div>
+        <div class="submit-section">
+            <button type="button" id="printResultsBtn" class="feedback-btn">列印評估結果</button>
+            <button type="button" id="saveAndContinueBtn" class="feedback-btn">儲存結果並繼續學習</button> {# 改名 #}
+        </div>
+    </div>
+</div>
+
+{# Chart.js 引入 #}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{# 你的 JavaScript 程式碼 #}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const frontendFormContainer = document.getElementById("frontendAssessmentFormContainer");
+        const resultsDisplaySection = document.getElementById("resultsDisplaySection");
+        const showResultsBtn = document.getElementById("showResultsBtn");
+        const printResultsBtn = document.getElementById("printResultsBtn");
+        const saveAndContinueBtn = document.getElementById("saveAndContinueBtn");
+        const djangoBackendForm = document.getElementById("djangoBackendForm");
+
+        // 評估項目和名稱 (與你範例一致)
+        const criteria = ["assessment", "material", "molding", "positioning", "trimming", "securing"];
+        const criteriaNames = [
+            "評估與測量技能", "材料準備與處理", "塑形與成型技巧",
+            "關節位置擺位", "修剪與邊緣處理", "固定與調整"
+        ];
+        const videoSections = {
+            "評估與測量技能": "影片 00:00-05:30 「患者評估與測量」部分",
+            "材料準備與處理": "影片 05:31-10:45 「材料選擇與處理」部分",
+            "塑形與成型技巧": "影片 10:46-18:20 「塑形與成型技術」部分",
+            "關節位置擺位": "影片 18:21-24:15 「關節位置擺放」部分",
+            "修剪與邊緣處理": "影片 24:16-30:00 「修剪與精加工」部分",
+            "固定與調整": "影片 30:01-35:45 「固定系統安裝與調整」部分"
+        };
+
+        let collectedScores = {}; // 用於儲存前端收集的分數
+        let collectedReflection = ""; // 用於儲存前端收集的反思筆記
+        let radarChartInstance = null; // 用於儲存雷達圖實例，以便更新或銷毀
+
+        showResultsBtn.addEventListener("click", function() {
+            let allAnswered = true;
+            let currentScores = {};
+            
+            criteria.forEach(item => {
+                // 注意選擇器要對應到 assessmentForm 內部
+                const selectedOption = document.querySelector(`#assessmentForm input[name="${item}"]:checked`);
+                if (!selectedOption) {
+                    allAnswered = false;
+                } else {
+                    currentScores[item] = parseInt(selectedOption.value);
+                }
+            });
+            
+            if (!allAnswered) {
+                alert("請為所有評估項目評分後再提交。");
+                return;
+            }
+            
+            collectedScores = currentScores; // 儲存分數供後續使用
+            collectedReflection = document.getElementById("reflection").value; // 儲存反思
+
+            // 隱藏表單，顯示結果
+            if(frontendFormContainer) frontendFormContainer.style.display = "none";
+            if(resultsDisplaySection) resultsDisplaySection.style.display = "block";
+            
+            // 顯示反思筆記
+            const reflectionEl = document.getElementById("reflectionContentDisplay");
+            if(reflectionEl) reflectionEl.textContent = collectedReflection || "未提供反思筆記";
+            
+            // 分析強弱項
+            let strengths = [];
+            let weaknesses = [];
+            criteria.forEach((item, index) => {
+                const score = collectedScores[item];
+                if (score >= 4) strengths.push(criteriaNames[index]);
+                else if (score <= 2) weaknesses.push(criteriaNames[index]);
+            });
+            
+            const strengthEl = document.getElementById("strengthContentDisplay");
+            if(strengthEl) {
+                strengthEl.innerHTML = strengths.length > 0 ? 
+                    `<p><span class="strength">您的強項：</span> ${strengths.join("、")}</p>` :
+                    "<p><span class=\"strength\">您的強項：</span> 尚未有明顯強項，持續練習將有助於提升技能。</p>";
+            }
+            
+            const weaknessEl = document.getElementById("weaknessContentDisplay");
+            if(weaknessEl) {
+                weaknessEl.innerHTML = weaknesses.length > 0 ?
+                    `<p><span class="weakness">需要改進的領域：</span> ${weaknesses.join("、")}</p>` :
+                    "<p><span class=\"weakness\">需要改進的領域：</span> 您在各領域都有基本掌握，繼續精進將達到更高水平。</p>";
+            }
+            
+            // 影片推薦
+            const videoRecEl = document.getElementById("videoRecommendationsDisplay");
+            if(videoRecEl) {
+                videoRecEl.innerHTML = ""; // 清空舊推薦
+                if (weaknesses.length > 0) {
+                    weaknesses.forEach(weakness => {
+                        if (videoSections[weakness]) {
+                            const li = document.createElement("li");
+                            li.textContent = videoSections[weakness];
+                            videoRecEl.appendChild(li);
+                        }
+                    });
+                } else {
+                    const li = document.createElement("li");
+                    li.textContent = "建議全片複習，並特別關注您評分較低的部分";
+                    videoRecEl.appendChild(li);
+                }
+            }
+            
+            // 創建或更新雷達圖
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            if (radarChartInstance) {
+                radarChartInstance.destroy(); // 銷毀舊圖表實例
+            }
+            radarChartInstance = new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: criteriaNames,
+                    datasets: [{
+                        label: '技能掌握程度',
+                        data: criteria.map(c => collectedScores[c] || 0),
+                        backgroundColor: 'rgba(91, 155, 213, 0.2)',
+                        borderColor: 'rgba(91, 155, 213, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(91, 155, 213, 1)',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 5,
+                            ticks: { stepSize: 1 }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+            
+            // 將焦點滾動到結果區頂部 (可選)
+            if(resultsDisplaySection) resultsDisplaySection.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        if(printResultsBtn) {
+            printResultsBtn.addEventListener("click", function() {
+                 // 確保結果是可見的才列印
+                if (resultsDisplaySection && resultsDisplaySection.style.display === 'block') {
+                    window.print();
+                } else {
+                    alert("請先提交評估並查看結果後再列印。");
+                }
+            });
+        }
+        
+        if(saveAndContinueBtn) {
+            saveAndContinueBtn.addEventListener("click", function() {
+                // 確保已收集到分數和反思 (即 showResultsBtn 已被點擊過)
+                if (Object.keys(collectedScores).length === 0) {
+                    alert("請先提交評估並查看結果，然後才能儲存。");
+                    // 或者可以觸發 showResultsBtn 的點擊事件，如果希望一步完成
+                    // showResultsBtn.click(); 
+                    // if (Object.keys(collectedScores).length === 0) return; // 如果點擊後仍未收集到數據則返回
+                    return;
+                }
+
+                // 填充 Django 後端表單的隱藏欄位
+                for (const key in collectedScores) {
+                    if (Object.hasOwnProperty.call(collectedScores, key)) {
+                        const inputElement = document.getElementById(`django_${key}_input`);
+                        if (inputElement) {
+                            inputElement.value = collectedScores[key];
+                        }
+                    }
+                }
+                const reflectionTextarea = document.getElementById("django_reflection_notes_input");
+                if (reflectionTextarea) {
+                     reflectionTextarea.value = collectedReflection;
+                }
+
+                // 提交 Django 後端表單
+                if (djangoBackendForm) {
+                    djangoBackendForm.submit();
+                } else {
+                    alert("錯誤：無法提交評估結果到伺服器。");
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends "splint_app/base.html" %}
+{% load static %}
+{% load splint_extras %} {# <--- 確保這一行存在，並且 splint_extras.py 在正確的 templatetags 目錄下 #}
+
+{% block content %}
+<div class="row">
+    {# 左側單元導航 (保持不變) #}
+    <div class="col-md-3">
+        <h4>課程單元</h4>
+        <div class="list-group unit-nav mb-3">
+            {% for u_nav in all_units %}
+            <a href="{{ u_nav.get_absolute_url }}" 
+               class="list-group-item list-group-item-action {% if u_nav.code == unit.code %}active{% endif %}">
+                {{ u_nav.get_code_display }}
+            </a>
+            {% endfor %}
+        </div>
+        <a href="{% url 'simulation' %}" class="list-group-item list-group-item-action">模擬操作與回饋</a>
+        <a href="{% url 'course_landing' %}" class="list-group-item list-group-item-action mt-2">返回課程列表</a>
+    </div>
+
+    {# 右側內容區域 #}
+    <div class="col-md-9">
+        <h2>{{ unit.get_code_display }}: {{ unit.title }}</h2>
+        
+        {% if unit.description %}
+            <p class="lead">{{ unit.description }}</p>
+        {% endif %}
+        <hr>
+
+        {# 遍歷這個單元的所有學習資源 #}
+        {% if unit.resources.all %}
+            {% for resource in unit.resources.all %}
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header">
+                        <h4 class="my-0 fw-normal">
+                            {% if resource.type == 'video' %}▶ {% elif resource.type == 'text_graphic' %}📄 {% endif %}
+                            {{ resource.title }}
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        {% if resource.type == 'video' %}
+                            {% if resource.content_url %}
+                                {% if "youtube.com/embed/" in resource.content_url %} {# 處理標準 embed URL #}
+                                    <div class="embed-responsive embed-responsive-16by9 mb-3">
+                                        <iframe class="embed-responsive-item" 
+                                                src="{{ resource.content_url }}" 
+                                                allowfullscreen width="100%" height="400"></iframe>
+                                    </div>
+                                {% elif "youtu.be/" in resource.content_url %} {# 處理 youtu.be 短連結 #}
+                                    {# 使用自訂的 split 和 last_item 過濾器 #}
+                                    {% with url_parts=resource.content_url|split:"/" %}
+                                        {% with short_id=url_parts|last_item %}
+                                            {% if short_id %}
+                                                <div class="embed-responsive embed-responsive-16by9 mb-3">
+                                                    <iframe class="embed-responsive-item" 
+                                                            src="https://www.youtube.com/embed/{{ short_id }}" 
+                                                            allowfullscreen width="100%" height="400"></iframe>
+                                                </div>
+                                            {% else %}
+                                                {# 如果 short_id 為空或解析失敗，提供原始連結 #}
+                                                <p><a href="{{ resource.content_url }}" target="_blank" class="btn btn-outline-warning">無法解析影片ID，點此觀看：{{ resource.title }}</a></p>
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endwith %}
+                                {% elif "youtube.com/watch?v=" in resource.content_url %} {# 處理 watch?v= 連結 #}
+                                    {# 假設 v= 後面直接是 ID，且沒有其他參數影響ID的提取。更健壯的方法是在 view 中用正則。#}
+                                    {# 這裡我們簡化處理，嘗試用 split 提取 #}
+                                    {% with query_params=resource.content_url|split:"watch?v=" %}
+                                        {% if query_params|length > 1 %}
+                                            {% with video_id_part=query_params|last_item %}
+                                                {% with video_id=video_id_part|split:"&"|first %} {# 取 & 之前的部分作為 ID #}
+                                                    {% if video_id %}
+                                                        <div class="embed-responsive embed-responsive-16by9 mb-3">
+                                                            <iframe class="embed-responsive-item" 
+                                                                    src="https://www.youtube.com/embed/{{ video_id }}" 
+                                                                    allowfullscreen width="100%" height="400"></iframe>
+                                                        </div>
+                                                    {% else %}
+                                                        <p><a href="{{ resource.content_url }}" target="_blank" class="btn btn-outline-warning">無法解析影片ID，點此觀看：{{ resource.title }}</a></p>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% endwith %}
+                                        {% else %}
+                                            <p><a href="{{ resource.content_url }}" target="_blank" class="btn btn-outline-warning">無法解析影片ID，點此觀看：{{ resource.title }}</a></p>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% else %} {# 其他非 YouTube 標準格式的影片連結 #}
+                                    <p><a href="{{ resource.content_url }}" target="_blank" class="btn btn-outline-primary">觀看影片：{{ resource.title }}</a></p>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-muted">影片內容準備中。</p>
+                            {% endif %}
+                        {% elif resource.type == 'text_graphic' %}
+                            {% if resource.content_text %}
+                                <div class="text-graphic-content">
+                                    {{ resource.content_text|safe }}
+                                </div>
+                            {% elif resource.content_url %}
+                                 <p><a href="{{ resource.content_url }}" target="_blank" class="btn btn-outline-secondary">查看教材：{{ resource.title }}</a></p>
+                            {% else %}
+                                <p class="text-muted">圖文教材內容準備中。</p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                此單元目前尚無學習資源。請稍後再試或聯繫管理員。
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{# 針對 CKEditor 生成的內容可能需要的樣式 (保持不變) #}
+<style>
+    .text-graphic-content img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 10px 0;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .text-graphic-content {
+        line-height: 1.8;
+        font-size: 1rem;
+    }
+    .text-graphic-content p {
+        margin-bottom: 1rem;
+    }
+    .text-graphic-content h1, .text-graphic-content h2, .text-graphic-content h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
