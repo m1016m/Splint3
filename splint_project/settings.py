@@ -140,9 +140,12 @@ LOGIN_REDIRECT_URL = 'course_landing' # 登入後導向課程頁面
 LOGOUT_REDIRECT_URL = 'home'          # 登出後導向首頁
 
 # 靜態文件設定 (如果需要)
-STATIC_URL = '/static/'
+STATIC_URL = 'static/' 
 # STATICFILES_DIRS = [BASE_DIR / "static"] # 如果你有專案層級的 static 目錄
-
+# 告訴 Django 去專案根目錄下的 'static' 資料夾中尋找靜態文件
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

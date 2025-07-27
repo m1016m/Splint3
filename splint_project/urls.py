@@ -27,6 +27,7 @@ urlpatterns = [
     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'), # 使用 next_page 在 settings.py LOGOUT_REDIRECT_URL 指定
     path('course/', include('splint_app.urls')), # 將 course 相關的 URL 包含進來
     path('ckeditor/', include('ckeditor_uploader.urls')), # 加入 ckeditor 上傳的 URL
+    path('content/', splint_views.content_view, name='content_page'), # <--- 新增這一行
 ]
 from django.conf import settings # 新增
 from django.conf.urls.static import static # 新增
