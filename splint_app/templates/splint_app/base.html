@@ -39,6 +39,10 @@
                             <a class="nav-link" href="{% url 'logout' %}">登出</a>
                         </li>
                     {% else %}
+                      </li>
+                      <li class="nav-item">
+                            <a class="nav-link" href="{% url 'content_page' %}">民眾</a> 
+                      </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'login' %}">登入</a>
                         </li>

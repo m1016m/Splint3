@@ -102,7 +102,7 @@ def simulation_view(request):
     # simulation_video_url_short = "https://youtu.be/xPmq8F2sKJI" 
     
     # 正確的嵌入式 URL
-    simulation_video_embed_url = "https://www.youtube.com/embed/xPmq8F2sKJI" 
+    simulation_video_embed_url = "https://www.youtube.com/embed/H4knrBQ3xTI" 
 
     existing_feedback = SimulationFeedback.objects.filter(user=request.user).exists()
 
@@ -161,3 +161,13 @@ def simulation_feedback_view(request):
         'page_title': '模擬操作回饋與自我評估'
     }
     return render(request, 'splint_app/feedback_form.html', context)
+
+# 新增的 content 頁面的 View
+def content_view(request):
+    """
+    渲染 content.html 頁面。
+    """
+    context = {
+        'page_title': '關於平台' # 設置頁面標題
+    }
+    return render(request, 'splint_app/content.html', context)

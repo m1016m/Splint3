@@ -1,0 +1,175 @@
+{% extends "splint_app/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* 可以在這裡放這個頁面專用的 CSS */
+    .section-intro, .section-articles {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+    }
+    .intro-card {
+        border: none;
+        background: #f8f9fa; /* 淺灰色背景 */
+        padding: 2rem;
+        border-radius: 0.5rem;
+    }
+    .intro-card img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%; /* 圓形頭像 */
+        margin-bottom: 1rem;
+        border: 4px solid white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .article-section {
+        margin-top: 4rem;
+        margin-bottom: 4rem;
+        border-top: 1px solid #dee2e6;
+        padding-top: 4rem;
+    }
+    .article-section:first-of-type {
+        border-top: none;
+        padding-top: 0;
+    }
+    .article-section h3.display-5 {
+        color: #343a40; /* 深色標題 */
+        border-left: 5px solid #0d6efd; /* 標題左側的藍色裝飾線 */
+        padding-left: 1rem;
+        margin-bottom: 2rem;
+    }
+    .card.info-card {
+        border: 1px solid #e9ecef;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card.info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+    .carousel-item img {
+        height: 500px; /* 固定輪播圖高度 */
+        object-fit: cover; /* 保持圖片比例並填滿容器 */
+        object-position: center; /* 圖片置中 */
+    }
+</style>
+
+<div class="container">
+    {# 2. 平台介紹區塊 #}
+    <section class="section-intro">
+        <div class="card intro-card">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center">
+                    <img src="{% static 'images/self.jpg' %}" alt="搞手Rehand">
+                    <h5 class="mt-2">搞手Rehand</h5>
+                </div>
+                <div class="col-md-8">
+                    <h3 class="mb-3">加入學習平台，一起認識副木</h3>
+                    <p class="lead">副木製作是職能治療重要的臨床業務之一！</p>
+                    <p>治療師透過繪製紙型、選擇熱塑性材料、加熱、裁剪、塑形、修整邊緣等步驟，根據每位患者的需求，量身客製而成。本學習平台講授示範及指導副木的製作要點，適合職能治療的臨床工作者、學生，以及對此感興趣的一般民眾。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# 3. 教學文章區塊 #}
+    <section class="section-articles">
+        
+        <!-- 文章一：腕隧道症候群 -->
+        <div class="article-section">
+            <h3 class="display-5">腕隧道症候群</h3>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card info-card h-100">
+                        <div class="row g-0">
+                            <div class="col-md-6"><img src="https://i.imgur.com/8mMBc44.png" class="img-fluid rounded-start" alt="..."></div>
+                            <div class="col-md-6 d-flex align-items-center"><div class="card-body"><p class="card-text">腕隧道症候群是最常見的上肢神經壓迫問題，因正中神經在手腕處受壓迫所引起。</p></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card info-card h-100">
+                        <div class="row g-0">
+                            <div class="col-md-6"><img src="https://i.imgur.com/69PLnDN.png" class="img-fluid rounded-start" alt="..."></div>
+                            <div class="col-md-6 d-flex align-items-center"><div class="card-body"><p class="card-text">常發生於40~60歲女性，抱怨手麻，尤其在晚上或開車時，伴隨疼痛、感覺異常、動作笨拙或無力。</p></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card info-card h-100">
+                        <div class="row g-0">
+                            <div class="col-md-6"><img src="https://i.imgur.com/UP7y29a.png" class="img-fluid rounded-start" alt="..."></div>
+                            <div class="col-md-6 d-flex align-items-center"><div class="card-body"><p class="card-text">原因可能與重複性使用或屈肌腱鞘發炎有關，導致肌腱與神經之間摩擦力增加。</p></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card info-card h-100">
+                        <div class="row g-0">
+                            <div class="col-md-6"><img src="https://i.imgur.com/PfKTyzK.png" class="img-fluid rounded-start" alt="..."></div>
+                            <div class="col-md-6 d-flex align-items-center"><div class="card-body"><h5>一般治療</h5><p class="card-text">注射類固醇或給予止痛藥。夜間穿戴豎腕(cock-up)副木，讓手腕維持正中位置以減少壓迫。</p></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                     <div class="card info-card"><img src="https://i.imgur.com/hBaICVZ.png" class="img-fluid rounded" alt="..."></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文章二：板機指 -->
+        <div class="article-section">
+            <h3 class="display-5">板機指</h3>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card info-card h-100">
+                        <div class="row g-0">
+                            <div class="col-md-6"><img src="https://i.imgur.com/tuB7ZO5.png" class="img-fluid rounded-start" alt="..."></div>
+                            <div class="col-md-6 d-flex align-items-center"><div class="card-body"><p class="card-text">因屈曲肌腱的腱鞘變厚或肌腱腫脹引起，導致手指屈曲後卡住無法伸直。</p></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card info-card h-100">
+                        <div class="row g-0">
+                            <div class="col-md-6"><img src="https://i.imgur.com/s5fK1Jv.png" class="img-fluid rounded-start" alt="..."></div>
+                            <div class="col-md-6 d-flex align-items-center"><div class="card-body"><h5>一般治療</h5><p class="card-text">注射類固醇或給予止痛藥。穿戴手指副木固定關節，讓肌腱休息恢復滑動度。</p></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                     <div class="card info-card"><img src="https://i.imgur.com/rKgTMy7.png" class="img-fluid rounded" alt="..."></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文章三：媽媽手 -->
+        <div class="article-section">
+            <h3 class="display-5">媽媽手</h3>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card info-card h-100">
+                        <div class="row g-0">
+                            <div class="col-md-6"><img src="https://i.imgur.com/d6HYgQB.png" class="img-fluid rounded-start" alt="..."></div>
+                            <div class="col-md-6 d-flex align-items-center"><div class="card-body"><p class="card-text">因外展拇長肌和伸拇短肌過度使用造成肌腱腫大或腔室腫脹所致。</p></div></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-lg-6">
+                    <div class="card info-card h-100">
+                        <div class="row g-0">
+                            <div class="col-md-6"><img src="https://i.imgur.com/JOMecrH.png" class="img-fluid rounded-start" alt="..."></div>
+                            <div class="col-md-6 d-flex align-items-center"><div class="card-body"><h5>治療與穿戴</h5><p class="card-text">建議整天穿戴副木，或至少在休息和睡覺時穿戴以減緩症狀。若狀況未改善，可注射皮質類固醇。</p></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                     <div class="card info-card"><img src="https://i.imgur.com/ahB7wn6.png" class="img-fluid rounded" alt="..."></div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
+{% endblock %}
